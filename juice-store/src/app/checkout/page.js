@@ -167,7 +167,7 @@ export default function Checkout() {
                                     placeholder="Enter your phone number"
                                     value={phone}
                                     onChange={e => setPhone(e.target.value)}
-                                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-orange-500 focus:outline-none transition-colors text-sm sm:text-base"
+                                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 text-black rounded-lg sm:rounded-xl focus:border-orange-500 focus:outline-none transition-colors text-sm sm:text-base"
                                     required
                                 />
                             </div>
@@ -181,7 +181,7 @@ export default function Checkout() {
                                     placeholder="Enter your name (optional)"
                                     value={name}
                                     onChange={e => setName(e.target.value)}
-                                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 rounded-lg sm:rounded-xl focus:border-orange-500 focus:outline-none transition-colors text-sm sm:text-base"
+                                    className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-200 text-black rounded-lg sm:rounded-xl focus:border-orange-500 focus:outline-none transition-colors text-sm sm:text-base"
                                 />
                             </div>
 

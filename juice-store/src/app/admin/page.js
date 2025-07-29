@@ -96,22 +96,50 @@ export default function AdminOrdersPage() {
                     </td>
                     <td className="px-4 py-2 text-sm font-bold text-orange-600">GHS {order.total}</td>
                     <td className="px-4 py-2 text-sm">
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${order.status === 'open' ? 'bg-yellow-200 text-yellow-800' : 'bg-green-200 text-green-800'}`}>
+                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold ${
+                        order.status === 'open' ? 'bg-yellow-200 text-yellow-800' :
+                        order.status === 'paid' ? 'bg-blue-200 text-blue-800' :
+                        order.status === 'delivered' ? 'bg-green-200 text-green-800' :
+                        order.status === 'failed' ? 'bg-red-200 text-red-800' :
+                        'bg-gray-200 text-gray-800'
+                      }`}>
                         {order.status}
                       </span>
                     </td>
                     <td className="px-4 py-2 text-xs text-gray-500">{order.createdAt ? new Date(order.createdAt).toLocaleString() : ''}</td>
                     <td className="px-4 py-2">
-                      {order.status === 'open' ? (
+                      {order.status === 'open' && (
+                        <button
+                          className="bg-blue-500 text-white px-4 py-1 rounded-lg font-semibold hover:bg-blue-600 transition-colors text-xs disabled:opacity-50 mr-2"
+                          disabled={updating[order.orderId]}
+                          onClick={() => handleStatusChange(order.orderId, 'paid')}
+                        >
+                          {updating[order.orderId] ? 'Updating...' : 'Mark Paid'}
+                        </button>
+                      )}
+                      {order.status === 'paid' && (
                         <button
                           className="bg-green-500 text-white px-4 py-1 rounded-lg font-semibold hover:bg-green-600 transition-colors text-xs disabled:opacity-50"
+                          disabled={updating[order.orderId]}
+                          onClick={() => handleStatusChange(order.orderId, 'delivered')}
+                        >
+                          {updating[order.orderId] ? 'Updating...' : 'Mark Delivered'}
+                        </button>
+                      )}
+                      {order.status === 'delivered' && (
+                        <button
+                          className="bg-gray-700 text-white px-4 py-1 rounded-lg font-semibold hover:bg-gray-900 transition-colors text-xs disabled:opacity-50"
                           disabled={updating[order.orderId]}
                           onClick={() => handleStatusChange(order.orderId, 'closed')}
                         >
                           {updating[order.orderId] ? 'Updating...' : 'Mark Closed'}
                         </button>
-                      ) : (
-                        <span className="text-green-600 font-bold text-xs">Closed</span>
+                      )}
+                      {order.status === 'closed' && (
+                        <span className="text-gray-700 font-bold text-xs">Closed</span>
+                      )}
+                      {order.status === 'failed' && (
+                        <span className="text-red-600 font-bold text-xs">Failed</span>
                       )}
                     </td>
                   </tr>

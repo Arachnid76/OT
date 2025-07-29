@@ -72,11 +72,14 @@ export default function Home() {
                                     Organic Things
                                 </h1>
                                 <div className="flex items-center space-x-3 sm:space-x-6">
+                                <Link href="/event" className="text-gray-700 hover:text-orange-600 font-medium transition-colors text-sm sm:text-base hidden sm:block">
+                                        Events
+                                    </Link>
                                     <Link href="/packages" className="text-gray-700 hover:text-orange-600 font-medium transition-colors text-sm sm:text-base hidden sm:block">
                                         Packages
                                     </Link>
                                     <Link href="/bulk" className="text-gray-700 hover:text-orange-600 font-medium transition-colors text-sm sm:text-base hidden sm:block">
-                                        Bulk Orders
+                                        Bulk Order
                                     </Link>
                                     <Link href="/checkout" className="relative p-2 hover:bg-gray-100 rounded-full transition-colors touch-manipulation">
                                         <Image src="/Cart.jpeg" alt="Cart" width={28} height={28} className="sm:w-8 sm:h-8 opacity-80" />
@@ -157,7 +160,7 @@ export default function Home() {
                                 <div>
                                     <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Organic Things</h3>
                                     <p className="text-gray-400 text-sm sm:text-base">
-                                        Premium organic juices for a healthier lifestyle.
+                                        Organic products, Organic people, 
                                     </p>
                                 </div>
                                 <div>
@@ -166,13 +169,14 @@ export default function Home() {
                                         <li><Link href="/packages" className="hover:text-white transition-colors">Packages</Link></li>
                                         <li><Link href="/bulk" className="hover:text-white transition-colors">Bulk Orders</Link></li>
                                         <li><Link href="/checkout" className="hover:text-white transition-colors">Cart</Link></li>
+                                        <li><Link href="/event" className="hover:text-white transition-colors">Event</Link></li>
                                     </ul>
                                 </div>
                                 <div>
                                     <h4 className="text-base sm:text-lg font-semibold mb-3 sm:mb-4">Contact</h4>
                                     <p className="text-gray-400 text-sm sm:text-base">
                                         Email: info@organicthings.com<br />
-                                        Phone: +233 XX XXX XXXX
+                                        Phone: +233 27 598 2028
                                     </p>
                                 </div>
                             </div>

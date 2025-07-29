@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { updateOrderStatus } from '@/app/lib/order';
 
 export async function GET(request) {
     try {
@@ -30,6 +31,16 @@ export async function GET(request) {
 
         // Check if payment was successful
         if (transaction.status === 'success') {
+            // Update order status to 'paid' in DynamoDB
+            try {
+                await updateOrderStatus(reference, 'paid', {
+                    paymentAmount: transaction.amount / 100 // Convert from kobo to GHS
+                });
+            } catch (dbError) {
+                console.error('Error updating order status:', dbError);
+                // Continue with verification even if DB update fails
+            }
+
             return NextResponse.json({
                 success: true,
                 message: 'Payment verified successfully',
@@ -41,6 +52,13 @@ export async function GET(request) {
                 }
             });
         } else {
+            // Update order status to 'failed' if payment was not successful
+            try {
+                await updateOrderStatus(reference, 'failed');
+            } catch (dbError) {
+                console.error('Error updating failed order status:', dbError);
+            }
+
             return NextResponse.json({
                 success: false,
                 message: 'Payment was not successful',
