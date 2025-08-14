@@ -9,7 +9,7 @@ export async function saveOrder(order) {
 }
 
 export async function updateOrderStatus(orderId, status, additionalData = {}) {
-  const updateExpression = 'set #status = :status';
+  let updateExpression = 'set #status = :status';
   const expressionAttributeValues = { ':status': status };
   
   // Add timestamp based on status

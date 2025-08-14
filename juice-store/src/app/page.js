@@ -82,7 +82,7 @@ export default function Home() {
                                         Bulk Order
                                     </Link>
                                     <Link href="/checkout" className="relative p-2 hover:bg-gray-100 rounded-full transition-colors touch-manipulation">
-                                        <Image src="/Cart.jpeg" alt="Cart" width={28} height={28} className="sm:w-8 sm:h-8 opacity-80" />
+                                        <Image src="/cart.jpeg" alt="Cart" width={28} height={28} className="sm:w-8 sm:h-8 opacity-80" />
                                     </Link>
                                 </div>
                             </div>
@@ -93,6 +93,9 @@ export default function Home() {
                                 </Link>
                                 <Link href="/bulk" className="text-gray-700 hover:text-orange-600 font-medium transition-colors text-sm">
                                     Bulk Orders
+                                </Link>
+                                <Link href="/event" className="text-gray-700 hover:text-orange-600 font-medium transition-colors text-sm">
+                                    Events
                                 </Link>
                             </div>
                         </div>
@@ -160,7 +163,7 @@ export default function Home() {
                                 <div>
                                     <h3 className="text-lg sm:text-xl font-bold mb-3 sm:mb-4">Organic Things</h3>
                                     <p className="text-gray-400 text-sm sm:text-base">
-                                        Organic products, Organic people, 
+                                        No Junk, Just Juice.
                                     </p>
                                 </div>
                                 <div>

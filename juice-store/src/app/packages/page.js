@@ -9,7 +9,7 @@ export default function PackagesPage() {
         <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center py-12">
             <button
                 onClick={() => router.push('/')}
-                className="mb-8 px-6 py-2 rounded-lg bg-orange-500 text-white font-semibold shadow hover:bg-orange-600 transition"
+                className="w-full max-w-xs px-6 py-3 rounded-lg bg-gray-200 text-gray-800 font-semibold shadow hover:bg-gray-300 transition text-lg mb-8"
             >
                 Back to Home
             </button>

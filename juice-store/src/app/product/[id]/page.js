@@ -38,7 +38,7 @@ export default function ProductPage() {
                     <p className="text-gray-600 mb-6">The product you're looking for doesn't exist.</p>
                     <button
                         onClick={() => router.push('/')}
-                        className="bg-orange-600 text-white px-6 py-3 rounded-lg hover:bg-orange-700 transition-colors"
+                        className="w-full max-w-xs px-6 py-3 rounded-lg bg-gray-200 text-gray-800 font-semibold shadow hover:bg-gray-300 transition text-lg"
                     >
                         Back to Home
                     </button>

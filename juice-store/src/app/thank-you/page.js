@@ -1,11 +1,11 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useCart } from '@/app/hooks/useCart';
 
-export default function ThankYou() {
+function ThankYouContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
     const { clearCart } = useCart();
@@ -31,8 +31,18 @@ export default function ThankYou() {
                     // Clear cart after successful payment
                     clearCart();
                 } else {
-                    setPaymentStatus('error');
-                    setError(data.message || 'Payment verification failed');
+                    // Fallback: check if order exists and is pending (pay on delivery)
+                    const orderRes = await fetch(`/api/admin/orders`);
+                    const orderData = await orderRes.json();
+                    const order = orderData.orders?.find(o => o.orderId === reference);
+
+                    if (order && order.status === 'pending') {
+                        setPaymentStatus('payOnDelivery');
+                        clearCart();
+                    } else {
+                        setPaymentStatus('error');
+                        setError(data.message || 'Payment verification failed');
+                    }
                 }
             } catch (error) {
                 console.error('Payment verification error:', error);
@@ -88,6 +98,49 @@ export default function ThankYou() {
         );
     }
 
+    if (paymentStatus === 'payOnDelivery') {
+        return (
+            <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white flex flex-col items-center justify-center p-8">
+                <div className="text-center space-y-8">
+                    <div className="relative w-24 h-24 mx-auto">
+                        <div className="absolute inset-0 border-4 border-green-500 rounded-full animate-ping opacity-75"></div>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <svg 
+                                className="w-16 h-16 text-green-500 animate-scale-in"
+                                fill="none" 
+                                stroke="currentColor" 
+                                viewBox="0 0 24 24"
+                            >
+                                <path 
+                                    strokeLinecap="round" 
+                                    strokeLinejoin="round" 
+                                    strokeWidth="3" 
+                                    d="M5 13l4 4L19 7"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+                    <h1 className="text-4xl font-extrabold text-gray-800 animate-slideDown">
+                        Thank You!
+                    </h1>
+                    <p className="text-xl text-gray-600 font-medium animate-fadeIn">
+                        Your order has been placed and will be processed for delivery. Please pay on delivery.
+                    </p>
+                    <p className="text-lg text-gray-500 animate-fadeIn" style={{ animationDelay: '0.5s' }}>
+                        Call us at <a href="tel:+233275982028" className="text-orange-600 hover:text-orange-700">+233275982028</a> if you have any questions while we work on your delivery.
+                    </p>
+                    <Link 
+                        href="/" 
+                        className="inline-block mt-4 text-orange-600 hover:text-orange-700 font-medium animate-fadeIn"
+                        style={{ animationDelay: '1s' }}
+                    >
+                        Click here if you're not redirected automatically
+                    </Link>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white flex flex-col items-center justify-center p-8">
             <div className="text-center space-y-8">
@@ -118,7 +171,7 @@ export default function ThankYou() {
                     Your payment was successful and order has been placed.
                 </p>
                 <p className="text-lg text-gray-500 animate-fadeIn" style={{ animationDelay: '0.5s' }}>
-                    Redirecting you back to home page...
+                    Call us at <a href="tel:+233275982028" className="text-orange-600 hover:text-orange-700">+233275982028</a> if you have any questions while we work on your delivery.
                 </p>
                 <Link 
                     href="/" 
@@ -130,4 +183,24 @@ export default function ThankYou() {
             </div>
         </div>
     );
-} 
+}
+
+function LoadingFallback() {
+    return (
+        <div className="min-h-screen bg-gradient-to-b from-orange-50 to-white flex flex-col items-center justify-center p-8">
+            <div className="text-center space-y-8">
+                <div className="animate-spin rounded-full h-24 w-24 border-b-2 border-orange-600 mx-auto"></div>
+                <h1 className="text-2xl font-bold text-gray-800">Loading...</h1>
+                <p className="text-gray-600">Please wait while we load the page.</p>
+            </div>
+        </div>
+    );
+}
+
+export default function ThankYou() {
+    return (
+        <Suspense fallback={<LoadingFallback />}>
+            <ThankYouContent />
+        </Suspense>
+    );
+}

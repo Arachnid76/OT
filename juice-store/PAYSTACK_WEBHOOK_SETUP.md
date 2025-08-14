@@ -27,7 +27,7 @@ NEXT_PUBLIC_BASE_URL=your_application_url
 4. Enter your webhook URL: `https://yourdomain.com/api/webhook/paystack`
 5. Select the following events:
    - `charge.success` - When a payment is successful
-   - `charge.failed` - When a payment fails
+- `charge.failed` - When a payment fails
    - `transfer.success` - When a transfer is successful (optional)
 
 ### 3. Webhook Security

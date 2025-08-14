@@ -16,6 +16,8 @@ export default function EventPage() {
     snacks: false,
   });
   const [submitted, setSubmitted] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked, dataset } = e.target;
@@ -41,9 +43,38 @@ export default function EventPage() {
     }
   };
 
+  const validateForm = () => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const phoneRegex = /^\d{10,15}$/; // Adjust for your region
+    const now = new Date();
+    const eventDate = new Date(form.date + 'T' + form.time);
+
+    if (!form.name.trim()) return "Name is required.";
+    if (!emailRegex.test(form.email)) return "Invalid email address.";
+    if (!phoneRegex.test(form.phone)) return "Invalid phone number.";
+    if (!form.date || !form.time) return "Date and time are required.";
+    if (eventDate < now) return "Event date/time must be in the future.";
+    if (form.juices.length === 0) return "Select at least one juice.";
+    for (const juice of form.juices) {
+      const qty = Number(form.juiceQuantities[juice]);
+      if (!qty || qty < 1) return "Juice quantities must be positive numbers.";
+    }
+    return null;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    setSubmitted(true);
+    const error = validateForm();
+    if (error) {
+      setFormError(error);
+      return;
+    }
+    setFormError("");
+    setIsLoading(true);
+    setTimeout(() => {
+      setSubmitted(true);
+      setIsLoading(false);
+    }, 500); // Simulate loading
   };
 
   const juiceList = form.juices.map(j => `${j} (${form.juiceQuantities[j] || 1})`).join(", ");
@@ -61,8 +92,8 @@ export default function EventPage() {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-yellow-50 to-green-50 p-6 flex flex-col items-center">
       <div className="w-full max-w-lg flex justify-start mb-4">
         <div className="w-full flex justify-center">
-          <Link href="/" className="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow">
-            ← Back to Home
+          <Link href="/" className="bg-gray-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg shadow">
+            Back to Home
           </Link>
         </div>
       </div>
@@ -110,7 +141,19 @@ export default function EventPage() {
                 <span>I'll ask about the local snacks!</span>
               </label>
             </div>
-            <button type="submit" className="w-full bg-orange-500 text-white py-2 rounded-lg font-bold hover:bg-orange-600 transition-colors">Share Event Details</button>
+            {formError && (
+              <div className="text-red-500 font-bold mb-2">{formError}</div>
+            )}
+            {isLoading && (
+              <div className="text-center text-orange-600 font-bold mb-2">Submitting...</div>
+            )}
+            <button
+              type="submit"
+              aria-label="Share Event Details"
+              className="w-full bg-orange-500 text-white py-2 rounded-lg font-bold hover:bg-orange-600 transition-colors"
+            >
+              Share Event Details
+            </button>
           </form>
         ) : (
           <div className="space-y-4">
@@ -124,7 +167,8 @@ export default function EventPage() {
               {form.snacks && <div><b>Snacks:</b> I'll ask about the local snacks!</div>}
             </div>
             <a
-              href={`https://wa.me/?text=${whatsappMessage}`}
+              aria-label="Share event details via WhatsApp"
+              href={`https://wa.me/233275982028?text=${encodeURIComponent(whatsappMessage)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="block w-full text-center bg-green-500 text-white py-2 rounded-lg font-bold hover:bg-green-600 transition-colors"
@@ -137,4 +181,4 @@ export default function EventPage() {
       </div>
     </div>
   );
-} 
+}

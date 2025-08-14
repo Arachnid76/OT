@@ -1,83 +1,47 @@
-import { NextResponse } from 'next/server';
-import { updateOrderStatus } from '@/app/lib/order';
-import crypto from 'crypto';
+import { NextResponse } from "next/server";
+import crypto from "crypto";
+import AWS from "aws-sdk";
 
-export async function POST(request) {
+const dynamoDB = new AWS.DynamoDB.DocumentClient({
+    region: process.env.AWS_REGION,
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY
+});
+
+const PAYSTACK_SECRET = process.env.PAYSTACK_SECRET_KEY;
+
+export async function POST(req) {
     try {
-        const body = await request.text();
-        const signature = request.headers.get('x-paystack-signature');
-        
-        // Verify webhook signature
-        const hash = crypto
-            .createHmac('sha512', process.env.PAYSTACK_SECRET_KEY)
-            .update(body)
-            .digest('hex');
-        
+        const body = await req.text(); // Raw body for signature verification
+        const signature = req.headers.get("x-paystack-signature");
+
+        const hash = crypto.createHmac("sha512", PAYSTACK_SECRET).update(body).digest("hex");
+
         if (hash !== signature) {
-            console.error('Invalid webhook signature');
-            return NextResponse.json({ success: false, message: 'Invalid signature' }, { status: 401 });
+            return NextResponse.json({ success: false, message: "Invalid signature" }, { status: 400 });
         }
 
         const event = JSON.parse(body);
-        console.log('Paystack webhook event:', event);
 
-        // Handle different event types
-        switch (event.event) {
-            case 'charge.success':
-                await handleSuccessfulPayment(event.data);
-                break;
-            case 'transfer.success':
-                console.log('Transfer successful:', event.data);
-                break;
-            case 'charge.failed':
-                await handleFailedPayment(event.data);
-                break;
-            default:
-                console.log('Unhandled event type:', event.event);
+        if (event.event === "charge.success") {
+            const { metadata, status } = event.data;
+            const orderId = metadata.orderId;
+
+            // Update DynamoDB order to "paid"
+            await dynamoDB
+                .update({
+                    TableName: "Orders",
+                    Key: { orderId },
+                    UpdateExpression: "set #s = :status",
+                    ExpressionAttributeNames: { "#s": "status" },
+                    ExpressionAttributeValues: { ":status": "paid" }
+                })
+                .promise();
         }
 
         return NextResponse.json({ success: true });
-
     } catch (error) {
-        console.error('Webhook error:', error);
-        return NextResponse.json({ success: false, message: 'Webhook processing failed' }, { status: 500 });
+        console.error("Webhook Error:", error);
+        return NextResponse.json({ success: false }, { status: 500 });
     }
 }
-
-async function handleSuccessfulPayment(transaction) {
-    try {
-        const { reference, amount, metadata } = transaction;
-        
-        console.log('Processing successful payment for reference:', reference);
-        
-        // Update order status to 'paid'
-        await updateOrderStatus(reference, 'paid', {
-            paymentAmount: amount / 100 // Convert from kobo to GHS
-        });
-
-        console.log('Order status updated to paid for reference:', reference);
-        
-        // You could also send notifications here (email, SMS, etc.)
-        
-    } catch (error) {
-        console.error('Error updating order status:', error);
-        throw error;
-    }
-}
-
-async function handleFailedPayment(transaction) {
-    try {
-        const { reference } = transaction;
-        
-        console.log('Processing failed payment for reference:', reference);
-        
-        // Update order status to 'failed'
-        await updateOrderStatus(reference, 'failed');
-
-        console.log('Order status updated to failed for reference:', reference);
-        
-    } catch (error) {
-        console.error('Error updating failed order status:', error);
-        throw error;
-    }
-} 
