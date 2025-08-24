@@ -70,7 +70,7 @@ export default function ProductPage() {
                 </div>
             </header>
 
-            {/* Main Content - Scrollable on mobile, fixed on desktop */}
+            {/* Main Content */}
             <div className="flex-1 flex items-center justify-center p-4 lg:h-screen lg:overflow-hidden">
                 <div className="w-full max-w-6xl h-full lg:max-h-[calc(100vh-80px)]">
                     <div className="bg-white rounded-2xl shadow-xl h-full overflow-hidden">
@@ -88,6 +88,11 @@ export default function ProductPage() {
                                         Organic
                                     </span>
                                 </div>
+                                {!product.available && (
+                                    <div className="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
+                                        <span className="text-3xl font-bold text-gray-200 drop-shadow-lg">Unavailable</span>
+                                    </div>
+                                )}
                             </div>
 
                             {/* Product Details */}
@@ -97,6 +102,9 @@ export default function ProductPage() {
                                         <h1 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-2">
                                             {product.name}
                                         </h1>
+                                        {!product.available && (
+                                            <div className="text-gray-400 font-semibold text-lg mb-2">Unavailable</div>
+                                        )}
                                         <p className="text-xl font-bold text-orange-600 mb-4">
                                             GH₵{product.price.toFixed(2)}
                                         </p>
@@ -108,7 +116,7 @@ export default function ProductPage() {
                                         </p>
                                     </div>
 
-                                    {/* Compact Benefits */}
+                                    {/* Benefits */}
                                     <div className="bg-orange-50 rounded-lg p-4">
                                         <h3 className="text-sm font-semibold text-gray-900 mb-2">Benefits</h3>
                                         <ul className="space-y-1 text-xs lg:text-sm text-gray-700">
@@ -133,7 +141,7 @@ export default function ProductPage() {
                                         </ul>
                                     </div>
 
-                                    {/* Compact Quantity Selector */}
+                                    {/* Quantity Selector */}
                                     <div className="space-y-2">
                                         <label className="block text-sm font-semibold text-gray-900">
                                             Quantity
@@ -163,18 +171,28 @@ export default function ProductPage() {
 
                                     {/* Add to Cart Button */}
                                     <button
-                                        onClick={handleAddToCart}
-                                        disabled={quantity === 0}
+                                        onClick={() => {
+                                            if (!product.available) {
+                                                alert('This product is currently unavailable.');
+                                                return;
+                                            }
+                                            handleAddToCart();
+                                        }}
+                                        disabled={quantity === 0 || !product.available}
                                         className={`w-full py-3 px-6 rounded-lg text-base font-bold transition-all duration-300 transform ${
-                                            quantity === 0 
-                                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                                            quantity === 0 || !product.available
+                                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                                 : 'bg-orange-500 text-white hover:bg-orange-600 hover:scale-105 shadow-lg'
                                         }`}
                                     >
-                                        {quantity === 0 ? 'Select Quantity' : `Add to Cart - GH₵${(product.price * quantity).toFixed(2)}`}
+                                        {!product.available
+                                            ? 'Unavailable'
+                                            : quantity === 0
+                                                ? 'Select Quantity'
+                                                : `Add to Cart - GH₵${(product.price * quantity).toFixed(2)}`}
                                     </button>
 
-                                    {/* Compact Additional Info */}
+                                    {/* Additional Info */}
                                     <div className="text-center text-xs text-gray-500">
                                         <p>Free delivery on orders over GH₵100 • Same day delivery available</p>
                                     </div>

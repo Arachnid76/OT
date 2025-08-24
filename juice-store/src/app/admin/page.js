@@ -255,46 +255,42 @@ function AdminOrdersPage() {
                     </td>
                     <td className="px-4 py-2 text-xs text-gray-500">{order.createdAt ? new Date(order.createdAt).toLocaleString() : ''}</td>
                     <td className="px-4 py-2">
-                      {order.status === 'open' && (
+                      <div className="flex gap-2">
+                        {order.status === "open" && (
+                          <button
+                            onClick={() => handleStatusChange(order.orderId, "paid")}
+                            className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 font-bold"
+                            aria-label="Mark Paid"
+                          >
+                            Mark Paid
+                          </button>
+                        )}
+                        {order.status === "paid" && (
+                          <button
+                            onClick={() => handleStatusChange(order.orderId, "delivered")}
+                            className="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700 font-bold"
+                            aria-label="Mark Delivered"
+                          >
+                            Mark Delivered
+                          </button>
+                        )}
+                        {order.status === "delivered" && (
+                          <button
+                            onClick={() => handleStatusChange(order.orderId, "closed")}
+                            className="bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700 font-bold"
+                            aria-label="Mark Closed"
+                          >
+                            Mark Closed
+                          </button>
+                        )}
                         <button
-                          className="bg-blue-500 text-white px-4 py-1 rounded-lg font-semibold hover:bg-blue-600 transition-colors text-xs disabled:opacity-50 mr-2"
-                          disabled={updating[order.orderId]}
-                          onClick={() => handleStatusChange(order.orderId, 'paid')}
+                          onClick={() => handleDelete(order.orderId)}
+                          className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 font-bold"
+                          aria-label="Delete Order"
                         >
-                          {updating[order.orderId] ? 'Updating...' : 'Mark Paid'}
+                          Delete
                         </button>
-                      )}
-                      {order.status === 'paid' && (
-                        <button
-                          className="bg-green-500 text-white px-4 py-1 rounded-lg font-semibold hover:bg-green-600 transition-colors text-xs disabled:opacity-50"
-                          disabled={updating[order.orderId]}
-                          onClick={() => handleStatusChange(order.orderId, 'delivered')}
-                        >
-                          {updating[order.orderId] ? 'Updating...' : 'Mark Delivered'}
-                        </button>
-                      )}
-                      {order.status === 'delivered' && (
-                        <button
-                          className="bg-gray-700 text-white px-4 py-1 rounded-lg font-semibold hover:bg-gray-900 transition-colors text-xs disabled:opacity-50"
-                          disabled={updating[order.orderId]}
-                          onClick={() => handleStatusChange(order.orderId, 'closed')}
-                        >
-                          {updating[order.orderId] ? 'Updating...' : 'Mark Closed'}
-                        </button>
-                      )}
-                      {order.status === 'closed' && (
-                        <span className="text-gray-700 font-bold text-xs">Closed</span>
-                      )}
-                      {order.status === 'failed' && (
-                        <span className="text-red-600 font-bold text-xs">Failed</span>
-                      )}
-                      <button
-                        onClick={() => handleDelete(order.orderId)}
-                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 font-bold ml-2"
-                        aria-label="Delete Order"
-                      >
-                        Delete
-                      </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

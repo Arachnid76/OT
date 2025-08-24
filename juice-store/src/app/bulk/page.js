@@ -32,8 +32,13 @@ export default function BulkPage() {
     const handleAddToCart = () => {
         const itemsToAdd = [];
         Object.entries(quantities).forEach(([id, quantity]) => {
+            const juice = juices[id];
             if (quantity > 0) {
-                const juice = juices[id];
+                if (!juice.available) {
+                    // Optionally, show a message for unavailable items
+                    alert(`${juice.name} is currently unavailable and will not be added to your cart.`);
+                    return;
+                }
                 itemsToAdd.push({
                     id: Number(id),
                     name: juice.name,
@@ -45,13 +50,10 @@ export default function BulkPage() {
         });
 
         if (itemsToAdd.length > 0) {
-            // Directly set the cart in localStorage
             localStorage.setItem('cart', JSON.stringify(itemsToAdd));
-            
-            // Navigate to checkout
             router.push('/checkout');
         } else {
-            alert('Please select at least one item');
+            alert('Please select at least one available item');
         }
     };
 
@@ -148,6 +150,32 @@ export default function BulkPage() {
                         </button>
                     </div>
                 </div>
+
+                {/* Juice List for Bulk Selection */}
+                <div className="w-full max-w-4xl bg-white rounded-2xl shadow-md p-4 sm:p-6 mt-6 transition-all duration-500 ease-in-out transform animate-fadeIn">
+                    <h3 className="text-xl sm:text-2xl font-semibold text-gray-800 mb-4 text-center">
+                        Select Juice Quantity for Bulk Order
+                    </h3>
+                    <div className="flex flex-col">
+                        {Object.entries(juices).map(([id, juice]) => (
+                            <div key={id} className="flex items-center space-x-4 mb-2">
+                                <span className="font-semibold">{juice.name}</span>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={quantities[id] || 0}
+                                    onChange={e => setQuantities(q => ({ ...q, [id]: Number(e.target.value) }))}
+                                    disabled={!juice.available}
+                                    className={`w-16 border rounded px-1 py-0.5 ml-2 ${!juice.available ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : ''}`}
+                                    placeholder="Qty"
+                                />
+                                {!juice.available && (
+                                    <span className="text-gray-400 ml-2 text-sm font-medium">Unavailable</span>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
 
             {/* Checkout Button */}
@@ -161,4 +189,4 @@ export default function BulkPage() {
             </div>
         </div>
     );
-} 
+}

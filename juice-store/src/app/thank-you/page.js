@@ -12,7 +12,15 @@ function ThankYouContent() {
     const [paymentStatus, setPaymentStatus] = useState('verifying');
     const [error, setError] = useState(null);
 
+    const payOnDelivery = searchParams.get('payOnDelivery') === 'true';
+
     useEffect(() => {
+        if (payOnDelivery) {
+            setPaymentStatus('payOnDelivery');
+            clearCart();
+            return;
+        }
+
         const verifyPayment = async () => {
             const reference = searchParams.get('reference');
             
@@ -52,7 +60,7 @@ function ThankYouContent() {
         };
 
         verifyPayment();
-    }, [searchParams, clearCart]);
+    }, [searchParams, clearCart, payOnDelivery]);
 
     useEffect(() => {
         if (paymentStatus === 'success') {

@@ -82,8 +82,10 @@ export default function Checkout() {
                 })
             });
             const data = await response.json();
-            if (response.ok && data.success && data.orderId) {
-                router.push(`/thank-you?reference=${data.orderId}`);
+            // Use transactionRef if returned, fallback to orderId
+            const ref = data.transactionRef || data.orderId;
+            if (response.ok && data.success && ref) {
+                router.push(`/thank-you?reference=${ref}&payOnDelivery=true`);
             } else {
                 throw new Error(data.message || "Order failed");
             }
